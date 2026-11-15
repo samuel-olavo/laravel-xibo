@@ -1,0 +1,44 @@
+{
+    "name": "samuel-olavo/laravel-xibo",
+    "description": "Laravel 13 client for the Xibo CMS API with multiple versioned connections",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "xibo", "digital-signage", "api-client", "openapi"],
+    "homepage": "https://github.com/samuel-olavo/laravel-xibo",
+    "support": {
+        "issues": "https://github.com/samuel-olavo/laravel-xibo/issues",
+        "source": "https://github.com/samuel-olavo/laravel-xibo"
+    },
+    "require": {
+        "php": "^8.3",
+        "illuminate/support": "^13.0",
+        "illuminate/http": "^13.0",
+        "illuminate/cache": "^13.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^11.0",
+        "phpunit/phpunit": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SamuelOlavo\\LaravelXibo\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SamuelOlavo\\LaravelXibo\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SamuelOlavo\\LaravelXibo\\XiboServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
