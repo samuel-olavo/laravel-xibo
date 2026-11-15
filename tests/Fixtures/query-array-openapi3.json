@@ -1,0 +1,12 @@
+{
+  "openapi": "3.0.0",
+  "info": {"version": "4.5"},
+  "paths": {
+    "/stats": {
+      "get": {
+        "operationId": "statsSearch",
+        "parameters": [{"name": "displayIds", "in": "query", "schema": {"type": "array", "items": {"type": "integer"}}}]
+      }
+    }
+  }
+}

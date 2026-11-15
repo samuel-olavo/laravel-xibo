@@ -1,0 +1,23 @@
+{
+  "swagger": "2.0",
+  "info": {"version": "4.0"},
+  "basePath": "/api",
+  "paths": {
+    "/layout": {
+      "get": {
+        "operationId": "layoutSearch",
+        "parameters": [{"name": "name", "in": "query", "type": "string"}]
+      }
+    },
+    "/layout/{layoutId}": {
+      "put": {
+        "operationId": "layoutEdit",
+        "consumes": ["application/x-www-form-urlencoded"],
+        "parameters": [
+          {"name": "layoutId", "in": "path", "required": true, "type": "integer"},
+          {"name": "name", "in": "formData", "required": true, "type": "string"}
+        ]
+      }
+    }
+  }
+}

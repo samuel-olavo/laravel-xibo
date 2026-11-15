@@ -1,0 +1,21 @@
+{
+  "openapi": "3.0.0",
+  "info": {"version": "4.5"},
+  "servers": [{"url": "/api"}],
+  "paths": {
+    "/layout/status/{layoutId}": {
+      "get": {
+        "operationId": "layoutStatus",
+        "parameters": [{"name": "layoutId", "in": "path", "required": true, "schema": {"type": "integer"}}]
+      }
+    },
+    "/library": {
+      "post": {
+        "operationId": "libraryAdd",
+        "requestBody": {
+          "content": {"multipart/form-data": {"schema": {"type": "object", "required": ["files"], "properties": {"files": {"type": "string", "format": "binary"}}}}}
+        }
+      }
+    }
+  }
+}

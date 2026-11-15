@@ -1,0 +1,15 @@
+{
+  "swagger": "2.0",
+  "info": {"version": "4.0"},
+  "paths": {
+    "/campaign/{campaignId}": {
+      "put": {
+        "operationId": "campaignEdit",
+        "parameters": [
+          {"name": "campaignId", "in": "path", "required": true, "type": "integer"},
+          {"name": "displayGroupIds[]", "in": "formData", "type": "array", "items": {"type": "integer"}}
+        ]
+      }
+    }
+  }
+}

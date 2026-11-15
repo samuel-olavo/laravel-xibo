@@ -1,0 +1,12 @@
+{
+  "swagger": "2.0",
+  "info": {"version": "4.0"},
+  "paths": {
+    "/displaygroup/criteria[/{displayGroupId}]": {
+      "post": {
+        "operationId": "displayGroupCriteria",
+        "parameters": [{"name": "displayGroupId", "in": "path", "required": false, "type": "integer"}]
+      }
+    }
+  }
+}
