@@ -1,37 +1,37 @@
 # Laravel Xibo
 
-Cliente da API do Xibo CMS para aplicações Laravel 13. O pacote permite usar várias instalações Xibo na mesma aplicação e disponibiliza métodos PHP para as operações documentadas nas especificações oficiais das versões 4.0 a 4.5.
+A Xibo CMS API client for Laravel 13. Use multiple Xibo installations in one application and call the operations documented in the official Xibo 4.0–4.5 API specifications through named PHP methods.
 
-Cada ligação consulta o seu próprio `/swagger.json` para descobrir as operações disponíveis e o formato dos pedidos. Também existe `call()` para operações novas que apareçam numa versão posterior. Consulte a [matriz de compatibilidade](docs/compatibility.md) para saber o que foi verificado.
+Each connection loads its CMS's `/swagger.json` to discover the operations and request formats available on that installation. The generic `call()` method also supports new operations exposed by later CMS versions. See the [compatibility matrix](docs/compatibility.md) for the specifications checked so far.
 
-## Requisitos
+## Requirements
 
-- PHP 8.3 ou superior
+- PHP 8.3 or later
 - Laravel 13
-- Xibo CMS 4.0 ou superior, com a API ativa
-- Um token de acesso ou uma aplicação OAuth com `client_id` e `client_secret`
+- Xibo CMS 4.0 or later with its API enabled
+- An access token or an OAuth application with a `client_id` and `client_secret`
 
-## Instalação
+## Installation
 
-Enquanto o pacote estiver apenas no GitHub, adicione o repositório à aplicação Laravel e instale a versão de desenvolvimento:
+Install the package from Packagist and publish its configuration file:
 
 ```bash
-composer config repositories.laravel-xibo vcs https://github.com/samuel-olavo/laravel-xibo
-composer require samuel-olavo/laravel-xibo:dev-main
+composer require samuel-olavo/laravel-xibo
 php artisan vendor:publish --tag=xibo-config
 ```
 
-O Laravel descobre o `XiboServiceProvider` automaticamente. Se o pacote vier a ser publicado no Packagist com uma versão estável, bastará `composer require samuel-olavo/laravel-xibo`.
+Laravel discovers `XiboServiceProvider` automatically.
 
-Para usar uma cópia local durante o desenvolvimento, substitua o primeiro comando por:
+To install a local checkout during development, configure a Composer path repository before running `composer require`:
 
 ```bash
-composer config repositories.laravel-xibo path "/caminho/para/laravel-xibo"
+composer config repositories.laravel-xibo path "/path/to/laravel-xibo"
+composer require samuel-olavo/laravel-xibo
 ```
 
-## Configurar uma ligação
+## Configure connections
 
-Após publicar a configuração, edite `config/xibo.php`. O exemplo seguinte configura duas instalações independentes:
+After publishing the configuration, edit `config/xibo.php`. This example defines two independent CMS connections:
 
 ```php
 return [
@@ -57,34 +57,34 @@ return [
 ];
 ```
 
-No `.env` da aplicação, defina os valores correspondentes. O endereço deve apontar para a raiz do CMS, sem `/api`:
+Set the corresponding values in your application's `.env`. Each URL must point to the CMS root, without `/api`:
 
 ```dotenv
 XIBO_DEFAULT_CONNECTION=main
-XIBO_MAIN_URL=https://cms.exemplo.pt
+XIBO_MAIN_URL=https://cms.example.com
 XIBO_MAIN_VERSION=4.5
-XIBO_MAIN_CLIENT_ID=identificador_da_aplicacao
-XIBO_MAIN_CLIENT_SECRET=segredo_da_aplicacao
+XIBO_MAIN_CLIENT_ID=your_application_id
+XIBO_MAIN_CLIENT_SECRET=your_application_secret
 
-XIBO_SECOND_URL=https://outro-cms.exemplo.pt
+XIBO_SECOND_URL=https://other-cms.example.com
 XIBO_SECOND_VERSION=4.4
-XIBO_SECOND_CLIENT_ID=identificador_da_segunda_aplicacao
-XIBO_SECOND_CLIENT_SECRET=segredo_da_segunda_aplicacao
+XIBO_SECOND_CLIENT_ID=your_second_application_id
+XIBO_SECOND_CLIENT_SECRET=your_second_application_secret
 ```
 
-Com `client_id` e `client_secret`, o pacote obtém o token pelo fluxo OAuth `client_credentials`, guarda-o no cache Laravel até perto do prazo de expiração e renova-o quando necessário. Também pode definir `XIBO_MAIN_TOKEN` para usar um token já existente; nesse caso, o pacote não consegue renová-lo automaticamente. Se configurar ambos, o token fornecido tem prioridade. Guarde as credenciais apenas no `.env` da aplicação.
+With `client_id` and `client_secret`, the package obtains a token through the OAuth `client_credentials` flow, caches it using Laravel's cache until shortly before expiry, and renews it when needed. You can instead set `XIBO_MAIN_TOKEN` to use an existing token; the package cannot renew a supplied token. If you configure both, the supplied token takes precedence. Keep credentials in your application's `.env` file.
 
-O valor de `version` é declarado por ligação e serve para diagnóstico. **Não escolhe uma lista fixa de operações.** A lista real vem do `/swagger.json` da instalação. Se esse endereço não estiver acessível, `specification_path` pode apontar para uma especificação JSON local. Sem especificação, ainda pode usar `request()` com um caminho direto da API.
+The `version` value is declared per connection for diagnostics. It does **not** select a fixed operation list. The available operations come from that installation's `/swagger.json`. If that endpoint is unavailable, `specification_path` can point to a local JSON specification. Without a specification, you can still use `request()` with a direct API path.
 
-## Usar a API
+## Use the API
 
-O método `connection()` sem argumento usa a ligação definida em `default`. Para escolher outra, passe o nome configurado:
+Calling `connection()` without an argument uses the configured `default` connection. Pass a configured name to select another CMS:
 
 ```php
 use SamuelOlavo\LaravelXibo\Facades\Xibo;
 
 $layouts = Xibo::connection()->layout()->layoutSearch([
-    'query' => ['layout' => 'Promoção'],
+    'query' => ['layout' => 'Promotion'],
 ])->json();
 
 $status = Xibo::connection('second')->layout()->layoutStatus([
@@ -92,58 +92,58 @@ $status = Xibo::connection('second')->layout()->layoutStatus([
 ])->json();
 ```
 
-Os métodos de recurso correspondem aos `operationId` da especificação Xibo. Por exemplo, `layout()->layoutSearch()` e `library()->libraryAdd()` usam a operação adequada da versão ligada. Os recursos disponíveis incluem layouts, ecrãs, campanhas, biblioteca, playlists, agendamentos, utilizadores e outros grupos documentados pela API.
+Named resource methods correspond to Xibo specification `operationId` values. For example, `layout()->layoutSearch()` and `library()->libraryAdd()` resolve the matching operation on the connected CMS. Resources include layouts, displays, campaigns, library items, playlists, schedules, users, and the other API groups covered by the specifications.
 
-Todos os métodos aceitam um array com estas chaves, conforme a operação:
+Every operation method accepts an array with the following keys when applicable:
 
-| Chave | Utilização |
+| Key | Purpose |
 | --- | --- |
-| `path` | Valores dos parâmetros incluídos no caminho, como `layoutId` |
-| `query` | Filtros, paginação e outros parâmetros da URL |
-| `headers` | Cabeçalhos adicionais exigidos pela operação |
-| `body` | Campos de formulário ou dados JSON |
-| `files` | Ficheiros para operações multipart |
-| `sink` | Caminho ou stream onde guardar uma resposta descarregada |
+| `path` | Values for path parameters such as `layoutId` |
+| `query` | URL filters, pagination, and other query parameters |
+| `headers` | Additional headers required by the operation |
+| `body` | Form fields or JSON data |
+| `files` | Files for multipart requests |
+| `sink` | A writable path or stream for a downloaded response |
 
-O resultado permite consultar `status()`, `headers()`, `body()` e `json()`:
+The response exposes `status()`, `headers()`, `body()`, and `json()`:
 
 ```php
 $response = Xibo::connection('main')->display()->displaySearch([
-    'query' => ['display' => 'Receção'],
+    'query' => ['display' => 'Reception'],
 ]);
 
 $displays = $response->json();
 $status = $response->status();
 ```
 
-Para chamar uma operação pelo seu identificador, incluindo uma operação nova ainda sem método PHP gerado:
+Call an operation by its identifier, including a new operation that does not yet have a generated PHP method:
 
 ```php
 $response = Xibo::connection('main')->call('displaySearch', [
-    'query' => ['display' => 'Receção'],
+    'query' => ['display' => 'Reception'],
 ]);
 ```
 
-Para usar um caminho relativo à API sem consultar a especificação:
+Use a path relative to the Xibo API without loading a specification:
 
 ```php
 $response = Xibo::connection('main')->request('GET', '/display', [
-    'query' => ['display' => 'Receção'],
+    'query' => ['display' => 'Reception'],
 ]);
 ```
 
-### Enviar e descarregar ficheiros
+### Upload and download files
 
-Os nomes dos campos devem coincidir com os da especificação da sua instalação. Na operação `libraryAdd`, o campo do ficheiro chama-se `files`:
+Field names must match the connected CMS specification. For `libraryAdd`, the file field is named `files`:
 
 ```php
 $media = Xibo::connection('main')->library()->libraryAdd([
-    'files' => ['files' => storage_path('app/imagem.png')],
-    'body' => ['name' => 'Imagem da campanha'],
+    'files' => ['files' => storage_path('app/image.png')],
+    'body' => ['name' => 'Campaign image'],
 ])->json();
 ```
 
-Para guardar diretamente um CSV, indique um caminho gravável em `sink`:
+To save a CSV response directly, provide a writable destination through `sink`:
 
 ```php
 Xibo::connection('main')->call('dataSetExportCsv', [
@@ -152,9 +152,9 @@ Xibo::connection('main')->call('dataSetExportCsv', [
 ]);
 ```
 
-### Tratar erros
+### Handle errors
 
-Uma operação ausente da especificação da instalação lança `OperationUnavailable`. Problemas de autenticação lançam `AuthenticationFailed`. Se o CMS devolver uma resposta HTTP sem sucesso, o pacote lança `XiboRequestFailed` e mantém os detalhes da resposta:
+An operation missing from the connected CMS specification throws `OperationUnavailable`. Authentication failures throw `AuthenticationFailed`. An unsuccessful CMS response throws `XiboRequestFailed` and retains the response details:
 
 ```php
 use SamuelOlavo\LaravelXibo\Exceptions\XiboRequestFailed;
@@ -162,28 +162,28 @@ use SamuelOlavo\LaravelXibo\Exceptions\XiboRequestFailed;
 try {
     $response = Xibo::connection('main')->display()->displaySearch();
 } catch (XiboRequestFailed $error) {
-    logger()->warning('Pedido ao Xibo falhou', [
+    logger()->warning('Xibo request failed', [
         'status' => $error->status(),
         'details' => $error->response()->json(),
     ]);
 }
 ```
 
-Consulte o `/swagger.json` **da sua instalação** para confirmar os parâmetros, as permissões e as operações dessa versão. O pacote valida os campos obrigatórios descritos na especificação, mas a autorização de cada operação continua a depender do CMS.
+Check **your installation's** `/swagger.json` for the parameters, permissions, and operations available in its version. The package validates required fields described by the specification; the CMS still controls authorization for each operation.
 
-## Testes e limites
+## Tests and limitations
 
-Para executar os testes do pacote:
+Run the package tests with:
 
 ```bash
 composer install
 vendor/bin/phpunit
 ```
 
-Os métodos gerados cobrem as **268 operações distintas** encontradas nas especificações oficiais Xibo 4.0–4.5 analisadas. `call()` pode usar operações futuras quando o CMS as publicar em `/swagger.json`, sem prometer compatibilidade antecipada com versões ainda não testadas.
+The generated methods cover the **268 distinct operations** found in the official Xibo 4.0–4.5 specifications examined. `call()` can use future operations when a CMS exposes them in `/swagger.json`; compatibility with untested versions cannot be guaranteed in advance.
 
-O pacote é um cliente da API. Não cria rotas, interface administrativa, base de dados local nem sincronização de conteúdos. A aplicação Laravel decide como apresentar os dados e controlar o acesso. Os testes automatizados verificam o cliente e a cobertura das especificações; falta validar a integração de ponta a ponta com um CMS Xibo real e credenciais próprias.
+This package is an API client. It does not create application routes, an administration interface, a local content database, or content synchronization. Your Laravel application decides how to present the data and control access. Automated tests check the client and specification coverage, but end-to-end integration with a live Xibo CMS and its credentials remains to be tested.
 
-## Licença
+## License
 
 [MIT](LICENSE).
