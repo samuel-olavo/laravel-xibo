@@ -1,8 +1,8 @@
-# Compatibilidade verificada
+# Verified compatibility
 
-O gerador foi executado com as especificações oficiais de Xibo CMS 4.0–4.5. A união contém **268 operações** distribuídas por **29 recursos**. Os métodos gerados cobrem as operações de cada ficheiro; `call()` utiliza a especificação do CMS ligado em tempo de execução.
+The resource generator was run against the official Xibo CMS 4.0–4.5 specifications. Together, they contain **268 distinct operations** across **29 resources**. Generated methods cover the operations in each specification; `call()` uses the connected CMS specification at runtime.
 
-| Ramo Xibo | Formato | Operações | Fonte | SHA-256 do ficheiro usado |
+| Xibo branch | Format | Operations | Source | SHA-256 of the file used |
 | --- | --- | ---: | --- | --- |
 | 4.0 | Swagger 2.0 | 216 | [release40](https://raw.githubusercontent.com/xibosignage/xibo-cms/release40/web/swagger.json) | `38042eea8a89839780d734a5c83827bb732b5013243c7038275037a28376016e` |
 | 4.1 | Swagger 2.0 | 224 | [release41](https://raw.githubusercontent.com/xibosignage/xibo-cms/release41/web/swagger.json) | `37918a7cf088479d37cec834cf4bc88dc5c82df86708b20bd8af9f2d4149aeeb` |
@@ -11,12 +11,12 @@ O gerador foi executado com as especificações oficiais de Xibo CMS 4.0–4.5. 
 | 4.4 | Swagger 2.0 | 229 | [release44](https://raw.githubusercontent.com/xibosignage/xibo-cms/release44/web/swagger.json) | `f328dec6915d7e36124726a58dc6a3d15220bdcb1ea99cd46a8c9c596829cd12` |
 | 4.5 | OpenAPI 3.0 | 263 | [master](https://raw.githubusercontent.com/xibosignage/xibo-cms/master/web/swagger.json) | `df3edd73b428dd8d3abe9e1fac2dce6bba279331b3e47e8e5dcbc9191df74272` |
 
-O Xibo 4.4 repete dois `operationId` em caminhos distintos. Para não perder essas operações, o catálogo usa o identificador original para o primeiro caminho e `method:path` para o segundo. Por exemplo, `delete:/campaign/layout/remove/{campaignId}` continua acessível por `call()` e por um método gerado.
+Xibo 4.4 repeats two `operationId` values on different paths. To preserve both operations, the catalog uses the original identifier for the first path and `method:path` for the second. For example, `delete:/campaign/layout/remove/{campaignId}` remains available through `call()` and a generated method.
 
-Estes valores medem a **cobertura da especificação**, não testes de ponta a ponta com um CMS em funcionamento. A versão concreta da instalação pode ter diferenças de patch ou uma especificação personalizada; o pacote lê o `/swagger.json` dessa instalação quando possível. Uma operação só pode ser executada se a versão a expuser e as credenciais tiverem permissão.
+These numbers measure **specification coverage**, not end-to-end tests against a running CMS. An installation may have patch-level differences or a customized specification. The package reads its `/swagger.json` when available. An operation can run only if that CMS exposes it and the credentials have permission.
 
-Para reproduzir o teste após descarregar os seis ficheiros:
+To reproduce the coverage test after downloading the six specification files:
 
 ```bash
-XIBO_SPEC_FILES=/caminho/4.0.json:/caminho/4.1.json:/caminho/4.2.json:/caminho/4.3.json:/caminho/4.4.json:/caminho/4.5.json vendor/bin/phpunit tests/Feature/ResourceCoverageTest.php
+XIBO_SPEC_FILES=/path/to/4.0.json:/path/to/4.1.json:/path/to/4.2.json:/path/to/4.3.json:/path/to/4.4.json:/path/to/4.5.json vendor/bin/phpunit tests/Feature/ResourceCoverageTest.php
 ```
